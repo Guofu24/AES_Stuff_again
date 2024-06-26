@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách hồ sơ</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+        body {
+            font-family: 'Source Sans Pro', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .navbar {
+            background-color: #2c3e50;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+        
+        .navbar a:hover {
+            background-color: #34495e;
+            border-radius: 5px;
+        }
+        
+        .card {
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+            display: inline-block;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .card-body {
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .card-text {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .form-inline {
+            margin-bottom: 10px;
+        }
+        
+        .form-inline input {
+            width: 250px;
+            margin-right: 10px;
+        }
+        
+        .form-inline button {
+            width: 80px;
+        }
+
+        /* Ensure buttons are on the same row */
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Footer Styles */
+        
+        footer {
+            background: #222;
+            color: #fff;
+            padding: 40px 0;
+        }
+        
+        footer .quick-links,
+        footer .contact-info,
+        footer .social-media,
+        footer .newsletter {
+            margin-bottom: 20px;
+        }
+        
+        footer .quick-links a,
+        footer .social-media a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            margin-bottom: 5px;
+        }
+        
+        footer .newsletter form {
+            display: flex;
+        }
+        
+        footer .newsletter input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+        }
+        
+        footer .newsletter button {
+            padding: 10px;
+            border: none;
+            background: #007bff;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+        
+        footer .disclaimer {
+            font-size: 14px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <a href="https://www.facebook.com/Phu22122004/">CryptoCipher</a>
+            </div>
+            <div class="nav-links">
+                <a href="/home/">Trang chủ</a>
+                <a href="/encrypt/">Mã hóa file</a>
+                <a href="/decrypt/">Giải mã file</a>
+                <a href="/create_stuff/">Tạo nhân viên</a>
+                <a href="/stuff_list/">Danh sách</a>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h1 class="text-center">Danh sách hồ sơ</h1>
+        <div class="row">
+            {% for item in stuff %}
+            <div class="card col-md-4">
+                <div class="card-body">
+                    <h3 class="card-title">ID: {{ item.id }}</h3>
+                    <p class="card-text">Họ và tên: {{ item.Firstname }} {{ item.Lastname }}</p>
+                    <p class="card-text">Vị trí: {{ item.Position }}</p>
+                    <p class="card-text">Năm sinh: {{ item.Year }}</p>
+                    <p class="card-text">Số điện thoại: {{ item.Phone }}</p>
+                    <p class="card-text">Địa chỉ: {{ item.Address }}</p>                  
+                    <div class="btn-group">
+                        <a href="{% url 'edit_stuff' item.id %}" class="btn btn-primary">Sửa</a>
+                        <button class="btn btn-primary" onclick="showDeleteModal('{{ item.id }}')">Xóa</button>
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel-{{ item.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="post" id="deleteForm" action="{% url 'delete_stuff' item.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel-{{ item.id }}">Nhập khóa để xóa</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="item_id" id="itemId" value="{{ item.id }}">
+                                            <div class="form-group">
+                                                <label for="deleteKey-{{ item.id }}">Nhập khóa (16 ký tự):</label>
+                                                <input type="password" class="form-control" id="deleteKey-{{ item.id }}" name="encryption_key" required pattern=".{16,16}" title="Khóa phải có độ dài 16 ký tự">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                            <button type="submit" class="btn btn-primary">Xác nhận</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% if key_required %}
+            <div class="col-md-12">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-inline">
+                        <input type="password" name="encryption_key" placeholder="Nhập khóa để giải mã (16 ký tự)" required pattern=".{16,16}" title="Khóa phải có độ dài 16 ký tự">
+                        <button type="submit">Giải mã</button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+            {% for item in decrypted_stuff %}
+            <div class="card col-md-4">
+                <div class="card-body">
+                    <h3 class="card-title">ID: {{ item.id }}</h3>
+                    <h3 class="card-title">{{ item.Firstname }} {{ item.Lastname }}</h3>
+                    <p class="card-text">Vị trí: {{ item.Position }}</p>
+                    <p class="card-text">Năm sinh: {{ item.Year }}</p>
+                    <p class="card-text">Số điện thoại: {{ item.Phone }}</p>
+                    <p class="card-text">Địa chỉ: {{ item.Address }}</p>
+                    <div class="btn-group">
+                        <a href="{% url 'edit_stuff' item.id %}" class="btn btn-primary">Sửa</a>
+                        <a href="{% url 'delete_stuff1' item.id %}" class="btn btn-primary">Xóa</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal -->
+    
+    
+
+    <footer>
+        <div class="container">
+            <div class="quick-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Help Center</a>
+            </div>
+            <div class="contact-info">
+                <p>Email: guofu2004@gmail.com</p>
+                <p>Phone: +84 966 572 874</p>
+            </div>
+            <div class="social-media">
+                <a href="https://www.facebook.com/Phu22122004/">Facebook</a>
+                <a href="https://www.instagram.com/_guofu24_/">Instagram</a>
+                <a href="https://www.tiktok.com/@phujiyong">Tiktok</a>
+            </div>
+            <div class="newsletter">
+                <p>Stay updated with the latest news and updates from CryptoCipher.</p>
+                <form>
+                    <input type="email" placeholder="Your email">
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+            <p class="disclaimer">&copy; 2024 Your Company. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function showDeleteModal(itemId) {
+            document.getElementById('itemId').value = itemId;
+            $('#deleteModal').modal('show');
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+</body>
+</html>
+ 

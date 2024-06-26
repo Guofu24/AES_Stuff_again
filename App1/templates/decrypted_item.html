@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin đã giải mã</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Styles can be added as needed */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thông tin đã giải mã</h1>
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">{{ item.Firstname }} {{ item.Lastname }}</h3>
+                <p class="card-text">Vị trí: {{ item.Position }}</p>
+                <p class="card-text">Năm sinh: {{ item.Year }}</p>
+                <p class="card-text">Số điện thoại: {{ item.Phone }}</p>
+                <p class="card-text">Địa chỉ: {{ item.Address }}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
